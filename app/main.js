@@ -18,6 +18,6 @@ const server = net.createServer((connection) => {
     const result = processMessage(data);
     connection.write(result);
   });
-}); 
+});  
 
 server.listen(6379, "127.0.0.1");
