@@ -4,7 +4,11 @@ const commands = require("./commands/received-commands");
 
 function processMessage(data) {
   let parsedMessage = parseMessage(data);
-  return commands[parsedMessage[0].value](parsedMessage);
+  let commandToExecute = commands[parsedMessage[0]?.value?.toLowerCase()];
+  if (!commandToExecute) {
+    throw new Error('MÉTODO NÃO IMPLEMENTADO');
+  }
+  return commandToExecute(parsedMessage);
 }
 
 const server = net.createServer((connection) => {
@@ -17,5 +21,3 @@ const server = net.createServer((connection) => {
 }); 
 
 server.listen(6379, "127.0.0.1");
-
-// processMessage('*3\r\n$3\r\nGET\r\n$');

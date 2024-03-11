@@ -21,6 +21,7 @@ function parseBulkStrings(value) {
     return response;
 }
 
+// Arrays - Starts with * - https://redis.io/docs/reference/protocol-spec/#arrays
 function parseArray(value) {
     const firstParamMatch = value.match(RegExp(/^\*([0-9])+/));
     if (!firstParamMatch) {
