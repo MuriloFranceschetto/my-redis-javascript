@@ -8,12 +8,13 @@ function parseBulkStrings(value) {
         length: null,
         value: null,
     };
-    const firstParamMatch = value.match(RegExp(/^\$([0-9])+/));
+    const firstParamMatch = value.match(RegExp(/^\$([0-9]+)/));
     if (!firstParamMatch) {
         throw new Error('Formatação inválida');
     }
     let splitedMessage = splitByCRLF(value);
     response.length = parseInt(firstParamMatch[1], 10);
+
     if (splitedMessage[1].length !== response.length) {
         throw new Error('PALAVRA NÂO DA BOA');
     }
