@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-
-const { PONG } = require("./return-commands");
+const KeyValueInfo = require('../keyValueInfo');
 
 const PATH_FILE_JSON = path.join("data.json");
 
@@ -10,7 +9,7 @@ function encodeSimpleString(response) {
 }
 
 function encodeBulkedString(response) {
-    return `$${response.length}\r\n${response}\r\n`;
+    return `$${response?.length || '-1'}\r\n${response || ''}\r\n`;
 }
 
 function echo(params) {
@@ -28,21 +27,33 @@ function ping(params) {
 }
 
 function set(params) {
-    if (!Array.isArray(params) || params[0]?.value?.toLowerCase() !== 'set' || !params[1]?.value || !params[2]?.value) {
-        throw new Error('Comando SET não é válido');
+    if (!Array.isArray(params) || params.length < 3) {
+        throw new Error('Comando SET deve ser um array');
+    }
+    if (params.splice(0, 1)[0]?.value?.toLowerCase() !== 'set') {
+        throw new Error('Comando SET não implementado');
     }
     
     if (!fs.existsSync(PATH_FILE_JSON)) {
         fs.writeFileSync(PATH_FILE_JSON, '{}');
     }
 
-    let jsonData = JSON.parse(fs.readFileSync(PATH_FILE_JSON));
+    let fileData = JSON.parse(fs.readFileSync(PATH_FILE_JSON));
 
-    const key = params[1].value;
-    const value = params[2].value;
-    jsonData[key] = value;
+    const key = params.splice(0, 1)[0].value;
+    const value = params.splice(0, 1)[0].value;
 
-    fs.writeFileSync(PATH_FILE_JSON, JSON.stringify(jsonData));
+    let keyValueInfo = new KeyValueInfo(key, value);
+
+    let indexExpireTimeConfig = params.findIndex(param => param?.value?.toLowerCase() === 'px');
+    if (indexExpireTimeConfig > -1) {
+        let [, milliseconds] = params.splice(indexExpireTimeConfig, 2);
+        keyValueInfo.setExpireTimeout(milliseconds.value);
+    }
+
+    fileData[keyValueInfo.key] = keyValueInfo;
+
+    fs.writeFileSync(PATH_FILE_JSON, JSON.stringify(fileData));
 
     return encodeSimpleString('OK');
 }
@@ -51,10 +62,18 @@ function get(params) {
     if (!Array.isArray(params) || params[0]?.value?.toLowerCase() !== 'get' || !params[1]?.value) {
         throw new Error('Comando GET não é válido');
     }
-    let jsonData = JSON.parse(fs.readFileSync(PATH_FILE_JSON));
+    let fileData = JSON.parse(fs.readFileSync(PATH_FILE_JSON));
 
-    const key = params[1].value;
-    return encodeBulkedString(jsonData[key]);
+    let jsonData = fileData[params[1].value];
+    let keyValueInfo = new KeyValueInfo(jsonData.key, jsonData.value, jsonData.timeToExpire);
+
+    let updatedValue = keyValueInfo.getValue();
+    if (updatedValue === undefined) {
+        delete fileData[keyValueInfo.key];
+        fs.writeFileSync(PATH_FILE_JSON, JSON.stringify(fileData));
+    }
+
+    return encodeBulkedString(updatedValue);
 }
 
 const commands = {
