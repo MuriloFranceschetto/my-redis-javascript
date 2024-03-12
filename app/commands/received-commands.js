@@ -9,7 +9,7 @@ function encodeSimpleString(response) {
 }
 
 function encodeBulkedString(response) {
-    return `$${response?.length || '-1'}\r\n${response || ''}\r\n`;
+    return `$${response?.length || '-1'}\r\n${response + '\r\n' || ''}`;
 }
 
 function echo(params) {
