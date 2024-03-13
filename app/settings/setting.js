@@ -6,7 +6,7 @@ class Setting {
     
     constructor(key, value, infoGroup) {
         this.key = key;
-        this.value = value;
+        this.#value = value;
         this.infoGroup = infoGroup;
     }
 

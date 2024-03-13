@@ -2,6 +2,7 @@ const net = require("net");
 const parseMessage = require("./parser");
 const commands = require("./commands/received-commands");
 const runnerArguments = require("./settings/runner-arguments");
+const settings = require("./settings/settings");
 
 function processMessage(data) {
   let parsedMessage = parseMessage(data);
@@ -22,6 +23,8 @@ const server = net.createServer((connection) => {
 });
 
 
-server.listen(runnerArguments.port, "127.0.0.1", () => console.log(`Program running on port ${runnerArguments.port}`));
+const port = settings.getInfo('port');
 
-console.log(processMessage('*2\r\n$4\r\ninfo\r\n$11\r\nreplication\r\n'));
+server.listen(port, "127.0.0.1", () => console.log(`Program running on port ${port}`));
+
+// console.log(processMessage('*2\r\n$4\r\ninfo\r\n$11\r\nreplication\r\n'));
