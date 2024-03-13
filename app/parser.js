@@ -1,6 +1,4 @@
-function splitByCRLF(value) {
-    return value.split('\r\n');
-}
+const { splitByCRLF } = require("./utils");
 
 // Bulk strings - Starts with $ - https://redis.io/docs/reference/protocol-spec/#bulk-strings
 function parseBulkStrings(value) {

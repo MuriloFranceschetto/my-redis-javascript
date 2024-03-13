@@ -1,16 +1,10 @@
 const fs = require('fs');
 const path = require('path');
+
 const KeyValueInfo = require('../keyValueInfo');
+const { encodeSimpleString, encodeBulkedString } = require('../utils');
 
 const PATH_FILE_JSON = path.join("data.json");
-
-function encodeSimpleString(response) {
-    return `+${response}\r\n`;
-}
-
-function encodeBulkedString(response) {
-    return `$${response?.length ?? '-1'}\r\n${(response || response === 0 ? response + '\r\n' : '')}`;
-}
 
 function echo(params) {
     if (!Array.isArray(params) || params[0]?.value?.toLowerCase() !== 'echo' || !params[1]) {
@@ -76,11 +70,17 @@ function get(params) {
     return encodeBulkedString(updatedValue);
 }
 
+function info(data) {
+    const settings = require('../settings/settings');
+    return settings.getInfo();
+}
+
 const commands = {
     echo,
     ping,
     get,
     set,
+    info,
 }
 
 module.exports = commands;
