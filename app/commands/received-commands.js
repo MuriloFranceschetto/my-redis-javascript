@@ -72,7 +72,7 @@ function get(params) {
 
 function info(data) {
     const settings = require('../settings/settings');
-    return settings.getInfoList();
+    return settings.getInfoList(data[1].value);
 }
 
 const commands = {

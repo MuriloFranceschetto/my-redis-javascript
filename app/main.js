@@ -27,4 +27,4 @@ const port = settings.getInfo('port');
 
 server.listen(port, "127.0.0.1", () => console.log(`Program running on port ${port}`));
 
-// console.log(processMessage('*2\r\n$4\r\ninfo\r\n$11\r\nreplication\r\n'));
+console.log(processMessage('*2\r\n$4\r\ninfo\r\n$11\r\nreplication\r\n'));

@@ -15,11 +15,14 @@ class RedisSettings {
         return this.#settings.find(sett => sett.key === key).value;
     }
 
-    getInfoList(argument) {
-        if (!argument) {
-            return this.#settings.map(sett => sett.getBulkStringInfo()).join(''); 
+    getInfoList(infoGroup) {
+        let result = [];
+        if (infoGroup) {
+            result = this.#settings.filter(sett => sett.infoGroup === infoGroup);
+        } else {
+            result = this.#settings; 
         }
-        return []
+        return result.map(sett => sett.getBulkStringInfo()).join('');
     }
 
 }
