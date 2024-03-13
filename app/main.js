@@ -1,6 +1,7 @@
 const net = require("net");
 const parseMessage = require("./parser");
 const commands = require("./commands/received-commands");
+const runnerArguments = require("./settings/runner-arguments");
 
 function processMessage(data) {
   let parsedMessage = parseMessage(data);
@@ -18,15 +19,9 @@ const server = net.createServer((connection) => {
     const result = processMessage(data);
     connection.write(result);
   });
-}); 
+});
 
-let port = 6379;
-let indexPortConfig = process.argv.findIndex(arg => arg === '--port');
-const portConfig = Number(process.argv[indexPortConfig + 1]);
-if (indexPortConfig > -1 && portConfig) {
-  port = portConfig;
-}
 
-server.listen(port, "127.0.0.1", () => console.log(`Program running on port ${port}`));
+server.listen(runnerArguments.port, "127.0.0.1", () => console.log(`Program running on port ${runnerArguments.port}`));
 
-// console.log(processMessage('*2\r\n$4\r\ninfo\r\n$11\r\nreplication\r\n'));
+console.log(processMessage('*2\r\n$4\r\ninfo\r\n$11\r\nreplication\r\n'));
